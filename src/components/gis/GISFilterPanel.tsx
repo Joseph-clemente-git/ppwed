@@ -19,7 +19,7 @@ const layerGroups: { title: string; items: LayerDef[] }[] = [
   {
     title: 'Base',
     items: [
-      { key: 'adminBoundaries', label: 'Admin Boundaries', icon: Map,    color: 'text-blue-500' },
+      { key: 'adminBoundaries', label: 'Admin Boundaries', icon: Map,    color: 'text-green-500' },
       { key: 'projects',        label: 'Project Pins',     icon: MapPin,  color: 'text-slate-500' },
     ],
   },
@@ -33,7 +33,7 @@ const layerGroups: { title: string; items: LayerDef[] }[] = [
   {
     title: 'Hazard Overlays',
     items: [
-      { key: 'flood',     label: 'Flood Zones',    icon: Waves,         color: 'text-blue-600' },
+      { key: 'flood',     label: 'Flood Zones',    icon: Waves,         color: 'text-green-600' },
       { key: 'landslide', label: 'Landslide Zones', icon: TriangleAlert, color: 'text-amber-500' },
       { key: 'seismic',   label: 'Seismic / Fault', icon: Zap,          color: 'text-red-500' },
     ],
@@ -58,7 +58,7 @@ const fundOptions   = ['all', 'NTA', '20% Dev Fund', 'SEF', 'LDRRMF', 'GAD', 'Pr
 const sectorOptions = ['all', ...Array.from(new Set(projects.map(p => p.sector)))];
 
 const STATUS_DOT: Record<string, string> = {
-  planned: 'bg-slate-400', ongoing: 'bg-blue-500', delayed: 'bg-amber-500',
+  planned: 'bg-slate-400', ongoing: 'bg-green-500', delayed: 'bg-amber-500',
   completed: 'bg-emerald-500', suspended: 'bg-red-500',
 };
 
@@ -68,7 +68,7 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
       onClick={() => onChange(!checked)}
       className={clsx(
         'relative w-8 h-4 rounded-full transition-colors flex-shrink-0',
-        checked ? 'bg-blue-500' : 'bg-slate-300'
+        checked ? 'bg-green-500' : 'bg-slate-300'
       )}
     >
       <span
@@ -181,7 +181,7 @@ export default function GISFilterPanel({ layers, onLayer, filters, onFilter }: P
         </div>
         <div className="mt-3 space-y-1.5">
           {[
-            { color: 'bg-blue-400/60', label: 'Flood Zone' },
+            { color: 'bg-green-400/60', label: 'Flood Zone' },
             { color: 'bg-amber-300/60', label: 'Landslide Zone' },
             { color: 'bg-red-300/50', label: 'Seismic / Fault' },
             { color: 'bg-cyan-400/40', label: 'Catchment Area' },

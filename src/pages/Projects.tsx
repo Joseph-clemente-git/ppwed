@@ -14,6 +14,8 @@ import type { Project, ProjectStatus, FundSource, DraftProject, WorkflowRole, Wo
 
 const ALL = 'all';
 type PageTab = 'registry' | 'intake' | 'bulk';
+type SortField = 'name' | 'status' | 'contract' | 'progress';
+type SortOrder = 'asc' | 'desc';
 
 const statusOptions: { value: ProjectStatus | 'all'; label: string }[] = [
   { value: ALL,         label: 'All Statuses' },
@@ -44,12 +46,12 @@ function nextWorkflowStatus(current: DraftProject['workflowStatus']): DraftProje
   return current;
 }
 
-function roleToStatus(role: WorkflowRole): DraftProject['workflowStatus'] {
-  if (role === 'PPDO')          return 'pending_ppdo';
-  if (role === 'PEO')           return 'pending_peo';
-  if (role === 'Budget Office') return 'pending_budget';
-  return 'pending_ppdo';
-}
+// function roleToStatus(role: WorkflowRole): DraftProject['workflowStatus'] {
+//   if (role === 'PPDO')          return 'pending_ppdo';
+//   if (role === 'PEO')           return 'pending_peo';
+//   if (role === 'Budget Office') return 'pending_budget';
+//   return 'pending_ppdo';
+// }
 
 interface Toast { id: number; message: string; type: 'success' | 'error' }
 
@@ -59,6 +61,8 @@ export default function Projects() {
   const [statusFilter, setStatusFilter] = useState<ProjectStatus | 'all'>(ALL);
   const [fundFilter, setFundFilter]   = useState<FundSource | 'all'>(ALL);
   const [munFilter, setMunFilter]     = useState('all');
+  const [sortField, setSortField]     = useState<SortField>('name');
+  const [sortOrder, setSortOrder]     = useState<SortOrder>('asc');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [draftProjects, setDraftProjects] = useState<DraftProject[]>(initialDraftProjects);
   const [showIntakeModal, setShowIntakeModal] = useState(false);
@@ -75,14 +79,33 @@ export default function Projects() {
     d => d.workflowStatus === 'pending_ppdo' || d.workflowStatus === 'pending_peo' || d.workflowStatus === 'pending_budget'
   ).length;
 
-  const filtered = useMemo(() => projects.filter(p => {
-    if (search && !p.name.toLowerCase().includes(search.toLowerCase()) &&
-        !p.implementingOffice.toLowerCase().includes(search.toLowerCase())) return false;
-    if (statusFilter !== ALL && p.status !== statusFilter) return false;
-    if (fundFilter !== ALL && p.fundSource !== fundFilter) return false;
-    if (munFilter !== ALL && p.municipalityId !== munFilter) return false;
-    return true;
-  }), [search, statusFilter, fundFilter, munFilter]);
+  const filtered = useMemo(() => {
+    let result = projects.filter(p => {
+      if (search && !p.name.toLowerCase().includes(search.toLowerCase()) &&
+          !p.implementingOffice.toLowerCase().includes(search.toLowerCase())) return false;
+      if (statusFilter !== ALL && p.status !== statusFilter) return false;
+      if (fundFilter !== ALL && p.fundSource !== fundFilter) return false;
+      if (munFilter !== ALL && p.municipalityId !== munFilter) return false;
+      return true;
+    });
+
+    result.sort((a, b) => {
+      let aVal: any = '', bVal: any = '';
+      if (sortField === 'name') { aVal = a.name; bVal = b.name; }
+      else if (sortField === 'status') { aVal = a.status; bVal = b.status; }
+      else if (sortField === 'contract') { aVal = a.contractAmount; bVal = b.contractAmount; }
+      else if (sortField === 'progress') { aVal = a.actualProgress; bVal = b.actualProgress; }
+
+      if (aVal == null) aVal = '';
+      if (bVal == null) bVal = '';
+      if (typeof aVal === 'string') aVal = aVal.toLowerCase();
+      if (typeof bVal === 'string') bVal = bVal.toLowerCase();
+
+      const cmp = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+      return sortOrder === 'asc' ? cmp : -cmp;
+    });
+    return result;
+  }, [search, statusFilter, fundFilter, munFilter, sortField, sortOrder]);
 
   function handleApprove(id: string, role: WorkflowRole, remarks: string) {
     setDraftProjects(prev => prev.map(p => {
@@ -167,25 +190,24 @@ export default function Projects() {
       <Header
         title="Project Monitoring"
         subtitle="Registry, intake workflow & S-curve progress"
-        actions={
-          <div className="flex gap-2">
-            <button
-              onClick={() => setShowBulkWizard(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold border border-slate-300 bg-white text-slate-700 rounded-lg hover:bg-slate-50 transition-colors"
-            >
-              <Upload size={13} /> Bulk Import
-            </button>
-            <button
-              onClick={() => setShowIntakeModal(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
-            >
-              <Plus size={13} /> New Project
-            </button>
-          </div>
-        }
       />
 
       <main className="flex-1 p-6 space-y-5">
+        {/* Action buttons */}
+        <div className="flex gap-2 justify-end">
+          <button
+            onClick={() => setShowBulkWizard(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold border border-slate-300 bg-white text-slate-700 rounded-lg hover:bg-slate-50 transition-colors"
+          >
+            <Upload size={13} /> Bulk Import
+          </button>
+          <button
+            onClick={() => setShowIntakeModal(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-sm"
+          >
+            <Plus size={13} /> New Project
+          </button>
+        </div>
         {/* Summary stats */}
         <div className="grid grid-cols-5 gap-3">
           {[
@@ -211,13 +233,13 @@ export default function Projects() {
               className={clsx(
                 'px-5 py-2.5 text-sm font-medium border-b-2 transition-colors flex items-center gap-2',
                 tab === t.key
-                  ? 'border-blue-600 text-blue-700'
+                  ? 'border-green-600 text-green-700'
                   : 'border-transparent text-slate-500 hover:text-slate-700'
               )}
             >
               {t.label}
               {t.badge != null && t.badge > 0 && (
-                <span className="text-[10px] font-bold bg-blue-600 text-white px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+                <span className="text-[10px] font-bold bg-green-600 text-white px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
                   {t.badge}
                 </span>
               )}
@@ -230,40 +252,61 @@ export default function Projects() {
           <>
             {/* Filters */}
             <Card>
-              <div className="flex flex-wrap gap-3 items-center">
-                <div className="relative flex-1 min-w-48">
-                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                  <input
-                    type="text"
-                    placeholder="Search projects or office…"
-                    value={search}
-                    onChange={e => setSearch(e.target.value)}
-                    className="w-full pl-8 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+              <div className="space-y-3">
+                <div className="flex flex-wrap gap-3 items-center">
+                  <div className="relative flex-1 min-w-48">
+                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input
+                      type="text"
+                      placeholder="Search projects or office…"
+                      value={search}
+                      onChange={e => setSearch(e.target.value)}
+                      className="w-full pl-8 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                  </div>
+                  <SlidersHorizontal size={14} className="text-slate-400" />
+                  <select
+                    value={statusFilter}
+                    onChange={e => setStatusFilter(e.target.value as any)}
+                    className="text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
+                  >
+                    {statusOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                  </select>
+                  <select
+                    value={fundFilter}
+                    onChange={e => setFundFilter(e.target.value as any)}
+                    className="text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
+                  >
+                    {fundOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                  </select>
+                  <select
+                    value={munFilter}
+                    onChange={e => setMunFilter(e.target.value)}
+                    className="text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
+                  >
+                    <option value="all">All Municipalities</option>
+                    {municipalities.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+                  </select>
                 </div>
-                <SlidersHorizontal size={14} className="text-slate-400" />
-                <select
-                  value={statusFilter}
-                  onChange={e => setStatusFilter(e.target.value as any)}
-                  className="text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                >
-                  {statusOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                </select>
-                <select
-                  value={fundFilter}
-                  onChange={e => setFundFilter(e.target.value as any)}
-                  className="text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                >
-                  {fundOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                </select>
-                <select
-                  value={munFilter}
-                  onChange={e => setMunFilter(e.target.value)}
-                  className="text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                >
-                  <option value="all">All Municipalities</option>
-                  {municipalities.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
-                </select>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-slate-500 font-medium">Sort by:</span>
+                  <select
+                    value={sortField}
+                    onChange={e => setSortField(e.target.value as SortField)}
+                    className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
+                  >
+                    <option value="name">Name</option>
+                    <option value="status">Status</option>
+                    <option value="contract">Contract Amount</option>
+                    <option value="progress">Progress</option>
+                  </select>
+                  <button
+                    onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                    className="text-xs bg-slate-100 border border-slate-200 rounded-lg px-2 py-1.5 hover:bg-slate-200 transition-colors"
+                  >
+                    {sortOrder === 'asc' ? '↑ Asc' : '↓ Desc'}
+                  </button>
+                </div>
               </div>
             </Card>
 
@@ -296,7 +339,7 @@ export default function Projects() {
                       return (
                         <tr
                           key={project.id}
-                          className="hover:bg-blue-50 cursor-pointer transition-colors"
+                          className="hover:bg-green-50 cursor-pointer transition-colors"
                           onClick={() => setSelectedProject(project)}
                         >
                           <td className="px-4 py-3">
@@ -381,7 +424,7 @@ export default function Projects() {
 
         {/* Bulk Import tab */}
         {tab === 'bulk' && (
-          <BulkImportWizard onClose={() => setTab('registry')} onComplete={(count) => {
+          <BulkImportWizard onClose={() => setTab('registry')} onSubmit={(count: number) => {
             setTab('intake');
             showToast(`${count} project(s) submitted to intake queue.`);
           }} />
@@ -396,7 +439,7 @@ export default function Projects() {
       {showBulkWizard && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-6">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-            <BulkImportWizard onClose={() => setShowBulkWizard(false)} onComplete={(count) => {
+            <BulkImportWizard onClose={() => setShowBulkWizard(false)} onSubmit={(count: number) => {
               setShowBulkWizard(false);
               setTab('intake');
               showToast(`${count} project(s) submitted to intake queue.`);

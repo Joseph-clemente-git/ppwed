@@ -54,7 +54,7 @@ function AAODRow({ ledger, color }: { ledger: typeof fundLedgers[0]; color: stri
         <div className="space-y-1">
           <div className="flex items-center gap-1.5">
             <div className="flex-1 bg-slate-100 rounded-full h-1.5">
-              <div className="h-full rounded-full bg-blue-300" style={{ width: `${oblRate}%` }} />
+              <div className="h-full rounded-full bg-green-400" style={{ width: `${oblRate}%` }} />
             </div>
             <span className="text-[10px] text-slate-400 w-8">{oblRate}%</span>
           </div>

@@ -21,10 +21,10 @@ export default function Sidebar() {
     <aside className="fixed left-0 top-0 h-screen w-60 bg-slate-900 text-white flex flex-col z-40 shadow-xl">
       <div className="px-5 py-5 border-b border-slate-700">
         <div className="flex items-center gap-2 mb-1">
-          <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-green-600 flex items-center justify-center">
             <MapPin size={16} className="text-white" />
           </div>
-          <span className="text-xs font-bold text-blue-400 uppercase tracking-widest">Province of</span>
+          <span className="text-xs font-bold text-green-400 uppercase tracking-widest">Province of</span>
         </div>
         <h1 className="text-base font-bold leading-tight text-white">Quirino</h1>
         <p className="text-xs text-slate-400 mt-0.5">Project Monitoring & Executive Dashboard</p>
@@ -40,7 +40,7 @@ export default function Sidebar() {
               clsx(
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all group',
                 isActive
-                  ? 'bg-blue-600 text-white shadow'
+                  ? 'bg-green-600 text-white shadow'
                   : 'text-slate-300 hover:bg-slate-800 hover:text-white'
               )
             }

@@ -31,7 +31,7 @@ function MapLoader() {
   return (
     <div className="flex-1 flex items-center justify-center bg-slate-100">
       <div className="flex flex-col items-center gap-3">
-        <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-10 h-10 border-4 border-green-500 border-t-transparent rounded-full animate-spin" />
         <p className="text-sm text-slate-500">Loading map…</p>
       </div>
     </div>
@@ -126,7 +126,7 @@ export default function GISMap() {
               <p className="text-xs text-slate-600">Selected: <strong className="text-slate-800">{selectedProjectId}</strong></p>
               <button
                 onClick={() => setSelectedProjectId(null)}
-                className="text-[10px] text-blue-600 hover:underline mt-0.5 block"
+                className="text-[10px] text-green-600 hover:underline mt-0.5 block"
               >
                 Clear selection
               </button>

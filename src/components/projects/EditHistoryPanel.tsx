@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Clock, Filter, ArrowRight } from 'lucide-react';
 import clsx from 'clsx';
-import type { EditHistoryEntry } from '../../types';
+// import type { EditHistoryEntry } from '../../types';
 import { editHistory } from '../../data/projectWorkflowData';
 
 const CATEGORY_COLORS: Record<string, { bg: string; text: string }> = {
@@ -45,7 +45,7 @@ export default function EditHistoryPanel({ projectId }: { projectId: string }) {
               className={clsx(
                 'text-[10px] font-semibold px-2 py-1 rounded-full transition-colors',
                 categoryFilter === cat
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-green-600 text-white'
                   : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
               )}
             >

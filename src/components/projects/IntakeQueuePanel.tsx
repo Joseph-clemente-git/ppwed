@@ -8,7 +8,7 @@ const WORKFLOW_STEPS: WorkflowRole[] = ['PPDO', 'PEO', 'Budget Office'];
 
 const STATUS_META: Record<WorkflowStatus, { label: string; color: string; bg: string; icon: React.ComponentType<any> }> = {
   draft:          { label: 'Draft',            color: 'text-slate-600',   bg: 'bg-slate-100',   icon: Clock },
-  pending_ppdo:   { label: 'Pending PPDO',     color: 'text-blue-700',    bg: 'bg-blue-100',    icon: Clock },
+  pending_ppdo:   { label: 'Pending PPDO',     color: 'text-green-700',   bg: 'bg-green-100',   icon: Clock },
   pending_peo:    { label: 'Pending PEO',      color: 'text-violet-700',  bg: 'bg-violet-100',  icon: Clock },
   pending_budget: { label: 'Pending Budget',   color: 'text-amber-700',   bg: 'bg-amber-100',   icon: Clock },
   approved:       { label: 'Approved',         color: 'text-emerald-700', bg: 'bg-emerald-100', icon: CheckCircle },
@@ -30,7 +30,7 @@ function WorkflowStepper({ approvals, workflowStatus }: { approvals: WorkflowApp
         const isActive = i === currentStepIndex - 1 || (workflowStatus !== 'rejected' && workflowStatus !== 'approved' && i === currentStepIndex);
         const isDone = approval?.status === 'approved';
         const isRejected = approval?.status === 'rejected';
-        const isPending = !approval && i < currentStepIndex;
+        // const isPending = !approval && i < currentStepIndex;
         const isFuture = i >= currentStepIndex && workflowStatus !== 'approved';
 
         return (
@@ -40,7 +40,7 @@ function WorkflowStepper({ approvals, workflowStatus }: { approvals: WorkflowApp
                 'w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all',
                 isDone      ? 'bg-emerald-500 border-emerald-500 text-white' :
                 isRejected  ? 'bg-red-500 border-red-500 text-white' :
-                isActive    ? 'bg-blue-500 border-blue-500 text-white animate-pulse' :
+                isActive    ? 'bg-green-600 border-green-600 text-white animate-pulse' :
                 isFuture    ? 'bg-white border-slate-200 text-slate-400' :
                               'bg-slate-100 border-slate-300 text-slate-400'
               )}>
@@ -55,7 +55,7 @@ function WorkflowStepper({ approvals, workflowStatus }: { approvals: WorkflowApp
             {i < WORKFLOW_STEPS.length - 1 && (
               <div className={clsx(
                 'flex-1 h-0.5 mx-1 mt-[-10px]',
-                isDone ? 'bg-emerald-400' : 'bg-slate-200'
+                isDone && approvals.find(a => a.role === WORKFLOW_STEPS[i + 1])?.status === 'approved' ? 'bg-emerald-400' : 'bg-slate-200'
               )} />
             )}
           </div>
@@ -121,8 +121,7 @@ interface Props {
 
 export default function IntakeQueuePanel({ projects, onApprove, onReject }: Props) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [actionRemarks, setActionRemarks] = useState('');
-  const [actionTarget, setActionTarget] = useState<{ id: string; role: WorkflowRole; action: 'approve' | 'reject' } | null>(null);
+  const [actionRemarks, setActionRemarks] = useState<Record<string, string>>({});
 
   const munMap = Object.fromEntries(municipalities.map(m => [m.id, m.name]));
 
@@ -133,12 +132,16 @@ export default function IntakeQueuePanel({ projects, onApprove, onReject }: Prop
     return null;
   };
 
-  function submitAction() {
-    if (!actionTarget) return;
-    if (actionTarget.action === 'approve') onApprove(actionTarget.id, actionTarget.role, actionRemarks);
-    else onReject(actionTarget.id, actionTarget.role, actionRemarks);
-    setActionTarget(null);
-    setActionRemarks('');
+  function submitAction(id: string, role: WorkflowRole, action: 'approve' | 'reject') {
+    const remarks = actionRemarks[id] || '';
+    if (action === 'reject' && !remarks.trim()) {
+      alert('Rejection requires remarks.');
+      return;
+    }
+    if (action === 'approve') onApprove(id, role, remarks);
+    else onReject(id, role, remarks);
+    setActionRemarks(prev => ({ ...prev, [id]: '' }));
+    setExpandedId(null);
   }
 
   return (
@@ -261,18 +264,18 @@ export default function IntakeQueuePanel({ projects, onApprove, onReject }: Prop
                       className="w-full text-xs border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                       rows={2}
                       placeholder="Add remarks or conditions (optional for approval, required for rejection)…"
-                      value={actionTarget?.id === project.id ? actionRemarks : ''}
-                      onChange={e => { setActionTarget({ id: project.id, role, action: 'approve' }); setActionRemarks(e.target.value); }}
+                      value={actionRemarks[project.id] || ''}
+                      onChange={e => setActionRemarks(prev => ({ ...prev, [project.id]: e.target.value }))}
                     />
                     <div className="flex gap-2 mt-2">
                       <button
-                        onClick={() => { setActionTarget({ id: project.id, role, action: 'approve' }); setTimeout(submitAction, 10); }}
+                        onClick={() => submitAction(project.id, role, 'approve')}
                         className="flex-1 flex items-center justify-center gap-1.5 text-xs font-semibold bg-emerald-600 text-white px-3 py-2 rounded-lg hover:bg-emerald-700 transition-colors"
                       >
                         <CheckCircle size={13} /> Approve
                       </button>
                       <button
-                        onClick={() => { setActionTarget({ id: project.id, role, action: 'reject' }); setTimeout(submitAction, 10); }}
+                        onClick={() => submitAction(project.id, role, 'reject')}
                         className="flex-1 flex items-center justify-center gap-1.5 text-xs font-semibold bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 transition-colors"
                       >
                         <XCircle size={13} /> Reject

@@ -63,7 +63,7 @@ export default function ClosureChecklist({ projectId }: Props) {
         </div>
         <div className="bg-slate-200 rounded-full h-2 overflow-hidden">
           <div
-            className={clsx('h-full rounded-full transition-all', allDone ? 'bg-emerald-500' : pct >= 50 ? 'bg-blue-500' : 'bg-amber-500')}
+            className={clsx('h-full rounded-full transition-all', allDone ? 'bg-emerald-500' : pct >= 50 ? 'bg-green-500' : 'bg-amber-500')}
             style={{ width: `${pct}%` }}
           />
         </div>

@@ -432,7 +432,7 @@ export default function ProjectIntakeModal({ onClose, onSubmit }: Props) {
                 {form.attachments.some(a => a.type === 'POW') && (
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-2">
                     <div className="flex items-center gap-2 mb-1.5">
-                      <Sparkles size={13} className="text-blue-500" />
+                      <Sparkles size={13} className="text-green-500" />
                       <p className="text-xs font-semibold text-blue-700">AI OCR Extraction Complete</p>
                     </div>
                     <div className="space-y-1 text-xs text-slate-600">
@@ -450,7 +450,7 @@ export default function ProjectIntakeModal({ onClose, onSubmit }: Props) {
           {/* AI Panel */}
           <div className="w-72 shrink-0 border-l border-slate-100 bg-slate-50 overflow-y-auto p-4 space-y-4">
             <div className="flex items-center gap-2">
-              <div className="w-6 h-6 bg-blue-600 rounded-lg flex items-center justify-center">
+              <div className="w-6 h-6 bg-green-600 rounded-lg flex items-center justify-center">
                 <Sparkles size={12} className="text-white" />
               </div>
               <p className="text-xs font-bold text-slate-700">AI Assistant</p>
@@ -458,12 +458,12 @@ export default function ProjectIntakeModal({ onClose, onSubmit }: Props) {
 
             {/* Auto-classification */}
             {(aiLoading || aiClassification) && (
-              <div className="bg-white border border-blue-200 rounded-lg p-3">
-                <p className="text-[10px] font-bold text-blue-600 uppercase tracking-wide mb-2">Auto-Classification</p>
+              <div className="bg-white border border-green-200 rounded-lg p-3">
+                <p className="text-[10px] font-bold text-green-600 uppercase tracking-wide mb-2">Auto-Classification</p>
                 {aiLoading
                   ? (
                     <div className="flex items-center gap-2 text-xs text-slate-500">
-                      <Loader2 size={12} className="animate-spin text-blue-500" />
+                      <Loader2 size={12} className="animate-spin text-green-500" />
                       Analyzing description…
                     </div>
                   )
@@ -481,7 +481,7 @@ export default function ProjectIntakeModal({ onClose, onSubmit }: Props) {
                         <span className="text-[10px] text-slate-500">{aiClassification.confidence}% confidence</span>
                         <button
                           onClick={applyAIClassification}
-                          className="text-[10px] bg-blue-600 text-white px-2 py-1 rounded-md font-semibold hover:bg-blue-700 transition-colors flex items-center gap-1"
+                          className="text-[10px] bg-green-600 text-white px-2 py-1 rounded-md font-semibold hover:bg-green-700 transition-colors flex items-center gap-1"
                         >
                           <Copy size={9} /> Apply
                         </button>
@@ -568,7 +568,7 @@ export default function ProjectIntakeModal({ onClose, onSubmit }: Props) {
                   className={clsx(
                     'flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-lg transition-colors',
                     canNext
-                      ? 'bg-blue-600 text-white hover:bg-blue-700'
+                      ? 'bg-green-600 text-white hover:bg-green-700'
                       : 'bg-slate-100 text-slate-400 cursor-not-allowed'
                   )}
                 >

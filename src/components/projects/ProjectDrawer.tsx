@@ -96,11 +96,11 @@ export default function ProjectDrawer({ project, onClose }: Props) {
                 key={t.key}
                 onClick={() => setTab(t.key)}
                 className={clsx(
-                  'px-3 py-1.5 text-xs font-medium border-b-2 whitespace-nowrap transition-colors shrink-0',
-                  tab === t.key
-                    ? 'border-blue-500 text-blue-600'
+                'px-3 py-1.5 text-xs font-medium border-b-2 whitespace-nowrap transition-colors shrink-0',
+                tab === t.key
+                    ? 'border-green-500 text-green-600'
                     : 'border-transparent text-slate-500 hover:text-slate-700'
-                )}
+              )}
               >
                 {t.label}
                 {t.key === 'variations' && project.variationOrders.length > 0 && (

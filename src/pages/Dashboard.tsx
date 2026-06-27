@@ -17,7 +17,7 @@ import {
 
 const STATUS_COLORS: Record<string, string> = {
   Completed: '#10b981',
-  Ongoing:   '#3b82f6',
+  Ongoing:   '#16a34a',
   Delayed:   '#f59e0b',
   Suspended: '#ef4444',
   Planned:   '#94a3b8',
@@ -70,15 +70,15 @@ export default function Dashboard() {
 
       <main className="flex-1 p-6 space-y-6">
         {/* AI Briefing */}
-        <Card className="border-blue-200 bg-blue-50">
+        <Card className="border-green-200 bg-green-50">
           <div className="flex gap-3">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center flex-shrink-0">
               <Zap size={16} className="text-white" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-blue-700 uppercase tracking-wide mb-1">AI Executive Briefing</p>
+              <p className="text-xs font-semibold text-green-700 uppercase tracking-wide mb-1">AI Executive Briefing</p>
               <p
-                className="text-sm text-blue-900 leading-relaxed"
+                className="text-sm text-green-900 leading-relaxed"
                 dangerouslySetInnerHTML={{
                   __html: executiveBriefing.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'),
                 }}
@@ -93,9 +93,9 @@ export default function Dashboard() {
             title="Total Projects"
             value={kpiSummary.totalProjects}
             subtitle={`${kpiSummary.ongoingProjects} ongoing`}
-            icon={<FolderKanban size={18} className="text-blue-600" />}
-            iconBg="bg-blue-100"
-            colorClass="text-blue-700"
+            icon={<FolderKanban size={18} className="text-green-600" />}
+            iconBg="bg-green-100"
+            colorClass="text-green-700"
             trend="neutral"
             trendLabel="FY 2025–2026"
           />
@@ -144,9 +144,9 @@ export default function Dashboard() {
             title="Ongoing"
             value={kpiSummary.ongoingProjects}
             subtitle="Projects"
-            icon={<TrendingUp size={18} className="text-blue-600" />}
-            iconBg="bg-blue-100"
-            colorClass="text-blue-700"
+            icon={<TrendingUp size={18} className="text-green-600" />}
+            iconBg="bg-green-100"
+            colorClass="text-green-700"
           />
           <KPICard
             title="Delayed"
